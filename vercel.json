@@ -29,6 +29,6 @@
     "env": {
         "APP_NAME": "CaseConnect",
         "APP_ENV": "production",
-        "APP_DEBUG": "false"
+        "APP_DEBUG": "true"
     }
 }
