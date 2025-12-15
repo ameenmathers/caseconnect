@@ -25,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
 
     protected function configureVercelStorage(): void
     {
-        $storagePath = '/tmp/storage';
+        $tmpPath = '/tmp';
+        $storagePath = $tmpPath . '/storage';
 
         $directories = [
             $storagePath,
@@ -44,5 +45,11 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->useStoragePath($storagePath);
+        
+        config([
+            'cache.default' => 'array',
+            'session.driver' => 'cookie',
+            'logging.default' => 'stderr',
+        ]);
     }
 }

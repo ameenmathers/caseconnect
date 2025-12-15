@@ -123,7 +123,14 @@ return [
             'handler' => NullHandler::class,
         ],
 
-        'emergency' => [
+        'emergency' => env('LOG_CHANNEL') === 'stderr' ? [
+            'driver' => 'monolog',
+            'level' => 'debug',
+            'handler' => StreamHandler::class,
+            'handler_with' => [
+                'stream' => 'php://stderr',
+            ],
+        ] : [
             'path' => storage_path('logs/laravel.log'),
         ],
 
