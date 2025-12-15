@@ -2,10 +2,11 @@
     "version": 2,
     "framework": null,
     "outputDirectory": "public",
-    "buildCommand": "npm run build",
+    "buildCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan config:cache && php artisan route:cache && php artisan view:cache",
     "functions": {
         "api/index.php": {
-            "runtime": "vercel-php@0.7.1"
+            "runtime": "vercel-php@0.7.1",
+            "maxDuration": 30
         }
     },
     "routes": [
@@ -25,13 +26,5 @@
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
-    ],
-    "env": {
-        "APP_NAME": "CaseConnect",
-        "APP_ENV": "production",
-        "APP_DEBUG": "false",
-        "APP_URL": "https://caseconnect.vercel.app",
-        "DB_CONNECTION": "sqlite",
-        "ASSEMBLYAI_API_KEY": "a1b88dc1462f4491bdb31786e17ebbda"
-    }
+    ]
 }
