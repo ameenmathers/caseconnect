@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "framework": "null",
+    "functions": {
+        "api/index.php": {
+            "runtime": "vercel-php@0.6.0"
+        }
+    },
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "api/index.php"
+        }
+    ],
+    "env": {
+        "APP_KEY": "base64:6X7Hr/Kz+NwZ9C+UO4vQ80q+V67Hr/Kz+NwZ9C+UO4vQ80q+V67Hr/Kz+NwZ9C+UO4vQ80q+V67Hr/Kz+NwZ9C+UO4vQ80q+V67Hr/Kz+NwZ9C+UO4vQ80q+V67Hr/Kz+NwZ9C+UO4vQ80q+V",
+        "APP_NAME": "CaseConnect",
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "APP_URL": "https://caseconnect.vercel.app",
+        "DB_CONNECTION": "sqlite",
+        "DB_DATABASE": "database.sqlite",
+        "ASSEMBLYAI_API_KEY": "a1b88dc1462f4491bdb31786e17ebbda"
+    }
+}
