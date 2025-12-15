@@ -1,59 +1,220 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CaseConnect - AI Call Summarizer & Lead Scoring Engine
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel application that transcribes call recordings, analyzes sentiment, and automatically scores leads for personal injury law firms.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Audio Transcription** - Upload MP3/WAV files and get AI-powered transcriptions via AssemblyAI
+- **Lead Scoring (0-100)** - Automatic scoring based on keywords, sentiment, urgency, and engagement
+- **Eligibility Detection** - Determines if a caller qualifies as a potential client
+- **Sentiment Analysis** - Identifies positive, negative, or neutral caller sentiment
+- **Keyword Detection** - Flags important terms like "car accident", "injury", "insurance denied"
+- **Next Actions** - AI-generated recommendations for follow-up
+- **Dashboard Analytics** - Real-time metrics on call volume, conversion rates, and lead quality
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel 11, PHP 8.2+
+- **Frontend:** Blade Components, Tailwind CSS 4
+- **Database:** SQLite (dev) / MySQL/PostgreSQL (prod)
+- **Testing:** Pest PHP (107 tests)
+- **API:** AssemblyAI for transcription
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 8.2 or higher
+- Composer
+- Node.js & npm
+- AssemblyAI API key
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### 1. Clone the repository
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/yourusername/caseconnect.git
+cd caseconnect
+```
 
-### Premium Partners
+### 2. Install dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+composer install
+npm install
+```
 
-## Contributing
+### 3. Environment setup
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+### 4. Configure your `.env` file
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```env
+# Database (SQLite for local dev)
+DB_CONNECTION=sqlite
 
-## Security Vulnerabilities
+# AssemblyAI API Key (required for transcription)
+ASSEMBLYAI_API_KEY=your_api_key_here
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Queue (use 'sync' for local, 'database' or 'redis' for production)
+QUEUE_CONNECTION=sync
+```
+
+### 5. Run migrations and seed
+
+```bash
+php artisan migrate --seed
+```
+
+### 6. Build assets
+
+```bash
+npm run build
+```
+
+### 7. Start the development server
+
+```bash
+# Option 1: Run everything together
+composer dev
+
+# Option 2: Run separately
+php artisan serve
+npm run dev
+php artisan queue:work  # If using database queue
+```
+
+Visit **http://localhost:8000**
+
+## Testing
+
+```bash
+# Run all 107 tests
+php artisan test
+
+# Run specific test suites
+php artisan test --filter=LeadScoring
+php artisan test --filter=TranscriptionService
+php artisan test --filter=CallController
+
+# Test AssemblyAI integration (requires API key)
+php artisan test:transcription
+```
+
+## Project Structure
+
+```
+app/
+├── Http/Controllers/
+│   ├── CallController.php       # Call CRUD operations
+│   └── DashboardController.php  # Dashboard statistics
+├── Jobs/
+│   └── ProcessCallRecording.php # Background transcription job
+├── Models/
+│   └── Call.php                 # Call model with scopes
+├── Services/
+│   ├── CallAnalysisService.php      # Orchestrates analysis pipeline
+│   ├── LeadScoringService.php       # Calculates lead scores
+│   ├── SentimentAnalysisService.php # Analyzes sentiment
+│   └── TranscriptionService.php     # AssemblyAI integration
+└── Traits/
+    ├── Analyzable.php           # Keyword detection utilities
+    └── HasLeadScore.php         # Score labels and colors
+
+resources/views/
+├── components/                  # Reusable Blade components
+│   ├── button.blade.php
+│   ├── card.blade.php
+│   ├── badge.blade.php
+│   └── score-indicator.blade.php
+├── calls/                       # Call views
+│   ├── index.blade.php
+│   ├── show.blade.php
+│   └── upload.blade.php
+└── dashboard.blade.php
+
+tests/
+├── Feature/                     # HTTP/Integration tests
+│   ├── CallControllerTest.php
+│   └── DashboardTest.php
+└── Unit/                        # Unit tests
+    ├── Models/CallTest.php
+    ├── Services/
+    │   ├── LeadScoringServiceTest.php
+    │   ├── SentimentAnalysisServiceTest.php
+    │   └── TranscriptionServiceTest.php
+    └── Traits/
+        ├── AnalyzableTest.php
+        └── HasLeadScoreTest.php
+```
+
+## How Lead Scoring Works
+
+The scoring algorithm evaluates calls across multiple dimensions:
+
+| Factor | Weight | Description |
+|--------|--------|-------------|
+| Keywords | 30% | Presence of terms like "car accident", "injury", "settlement" |
+| Sentiment | 20% | Positive sentiment indicates engaged caller |
+| Duration | 15% | Longer calls suggest genuine interest |
+| Urgency | 15% | Words like "urgent", "immediately", "emergency" |
+| Contact Info | 10% | Caller provides phone/email |
+| Engagement | 10% | Word count and conversation depth |
+
+### Score Labels
+
+| Score | Label | Color |
+|-------|-------|-------|
+| 80-100 | Hot Lead | Green |
+| 60-79 | Warm Lead | Amber |
+| 40-59 | Lukewarm | Orange |
+| 20-39 | Cold Lead | Rose |
+| 0-19 | Very Cold | Gray |
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Dashboard with statistics |
+| GET | `/calls` | List all calls |
+| GET | `/calls/create` | Upload form |
+| POST | `/calls` | Upload new call |
+| GET | `/calls/{id}` | View call details |
+| POST | `/calls/{id}/reanalyze` | Re-run analysis |
+| DELETE | `/calls/{id}` | Delete call |
+
+## Deployment
+
+### Railway
+
+1. Connect your GitHub repository
+2. Add environment variables:
+   - `APP_KEY` (generate with `php artisan key:generate --show`)
+   - `ASSEMBLYAI_API_KEY`
+   - `DB_CONNECTION=pgsql` (or mysql)
+   - Database credentials from Railway
+3. Deploy
+
+### Environment Variables for Production
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+DB_CONNECTION=pgsql
+DB_HOST=your-host
+DB_DATABASE=your-database
+DB_USERNAME=your-username
+DB_PASSWORD=your-password
+
+QUEUE_CONNECTION=database
+ASSEMBLYAI_API_KEY=your-api-key
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License - feel free to use this project for your portfolio or production applications.
