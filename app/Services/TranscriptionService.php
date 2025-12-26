@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -15,6 +16,16 @@ class TranscriptionService
     public function __construct()
     {
         $this->apiKey = config('services.assemblyai.key');
+        
+        if (empty($this->apiKey)) {
+            Log::error('AssemblyAI API key is not configured');
+            throw new RuntimeException('AssemblyAI API key is not set. Please configure ASSEMBLYAI_API_KEY in your .env file.');
+        }
+        
+        Log::info('TranscriptionService initialized', [
+            'api_key_set' => !empty($this->apiKey),
+            'api_key_length' => strlen($this->apiKey),
+        ]);
     }
 
     public function transcribe(string $filePath): array
@@ -35,9 +46,12 @@ class TranscriptionService
 
     protected function uploadFile(string $filePath): string
     {
+        Log::info('Uploading file to AssemblyAI', ['file_path' => $filePath]);
+        
         $fileContent = Storage::get($filePath);
 
         if (!$fileContent) {
+            Log::error('File not found or unreadable', ['file_path' => $filePath]);
             throw new RuntimeException("Unable to read file: {$filePath}");
         }
 
@@ -50,10 +64,17 @@ class TranscriptionService
             ->post('/upload');
 
         if (!$response->successful()) {
+            Log::error('AssemblyAI upload failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             throw new RuntimeException('Failed to upload file to AssemblyAI: ' . $response->body());
         }
 
-        return $response->json('upload_url');
+        $uploadUrl = $response->json('upload_url');
+        Log::info('File uploaded successfully', ['upload_url' => substr($uploadUrl, 0, 50) . '...']);
+        
+        return $uploadUrl;
     }
 
     protected function submitTranscription(string $audioUrl): string
@@ -66,10 +87,17 @@ class TranscriptionService
         ]);
 
         if (!$response->successful()) {
+            Log::error('AssemblyAI transcription submission failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             throw new RuntimeException('Failed to submit transcription: ' . $response->body());
         }
 
-        return $response->json('id');
+        $transcriptId = $response->json('id');
+        Log::info('Transcription submitted', ['transcript_id' => $transcriptId]);
+        
+        return $transcriptId;
     }
 
     protected function pollForCompletion(string $transcriptId): array

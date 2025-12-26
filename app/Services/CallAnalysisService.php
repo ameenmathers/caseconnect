@@ -17,10 +17,14 @@ class CallAnalysisService
 
     public function process(Call $call): Call
     {
+        \Log::info('Starting call analysis', ['call_id' => $call->id]);
+        
         $call->markAsProcessing();
 
         try {
+            \Log::info('Transcribing call', ['call_id' => $call->id, 'file_path' => $call->file_path]);
             $transcriptionResult = $this->transcriptionService->transcribe($call->file_path);
+            \Log::info('Transcription complete', ['call_id' => $call->id, 'text_length' => strlen($transcriptionResult['text'] ?? '')]);
 
             $analysisData = [
                 'transcript' => $transcriptionResult['text'],
@@ -53,7 +57,14 @@ class CallAnalysisService
             ]);
 
             $call->markAsCompleted();
+            \Log::info('Call analysis completed successfully', ['call_id' => $call->id]);
         } catch (\Exception $e) {
+            \Log::error('Call analysis failed', [
+                'call_id' => $call->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             $call->markAsFailed($e->getMessage());
             throw $e;
         }

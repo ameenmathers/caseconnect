@@ -25,7 +25,7 @@ class CallController extends Controller
         return view('calls.upload');
     }
 
-    public function store(UploadCallRequest $request): RedirectResponse
+    public function store(UploadCallRequest $request, CallAnalysisService $analysisService): RedirectResponse
     {
         $file = $request->file('audio');
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
@@ -40,11 +40,27 @@ class CallController extends Controller
             'status' => 'pending',
         ]);
 
-        ProcessCallRecording::dispatch($call);
+        $queueConnection = config('queue.default');
+        
+        if ($queueConnection === 'sync') {
+            try {
+                $analysisService->process($call);
+                $message = 'Call uploaded and processed successfully.';
+            } catch (\Exception $e) {
+                \Log::error('Synchronous processing failed', [
+                    'call_id' => $call->id,
+                    'error' => $e->getMessage(),
+                ]);
+                $message = 'Call uploaded but processing failed. Check logs for details.';
+            }
+        } else {
+            ProcessCallRecording::dispatch($call);
+            $message = 'Call uploaded successfully. Processing will begin shortly.';
+        }
 
         return redirect()
             ->route('calls.show', $call)
-            ->with('success', 'Call uploaded successfully. Processing will begin shortly.');
+            ->with('success', $message);
     }
 
     public function show(Call $call): View
