@@ -24,6 +24,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'has_flown_private' => $request->has_flown_private,
+            'preferred_location' => $request->preferred_location,
         ]);
 
         $token = $user->createToken('mobile-app')->plainTextToken;
@@ -81,7 +83,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        $data = $request->only(['name', 'phone', 'preferred_location']);
+        $data = $request->only(['name', 'phone', 'preferred_location', 'has_flown_private']);
 
         if ($request->hasFile('profile_picture')) {
             if ($user->profile_picture) {
@@ -127,6 +129,7 @@ class AuthController extends Controller
             'phone' => $user->phone,
             'profile_picture' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
             'preferred_location' => $user->preferred_location,
+            'has_flown_private' => $user->has_flown_private,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ];

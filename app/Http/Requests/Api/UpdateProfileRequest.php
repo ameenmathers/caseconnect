@@ -18,6 +18,7 @@ class UpdateProfileRequest extends FormRequest
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
             'profile_picture' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:5120'],
             'preferred_location' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'has_flown_private' => ['sometimes', 'nullable', 'boolean'],
         ];
     }
 }

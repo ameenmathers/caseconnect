@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'preferred_location',
+        'has_flown_private',
     ];
 
     /**

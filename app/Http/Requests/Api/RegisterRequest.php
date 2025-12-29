@@ -19,6 +19,8 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'has_flown_private' => ['nullable', 'boolean'],
+            'preferred_location' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
