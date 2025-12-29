@@ -32,12 +32,20 @@ class AuthController extends Controller
 
         try {
             Mail::to($user->email)->send(new WelcomeEmail($user));
-            Log::info('Welcome email sent', ['user_id' => $user->id, 'email' => $user->email]);
+            Log::info('Welcome email sent successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'mailer' => config('mail.default'),
+            ]);
         } catch (\Exception $e) {
             Log::error('Failed to send welcome email', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'error' => $e->getMessage(),
+                'mailer' => config('mail.default'),
+                'resend_key_set' => !empty(config('services.resend.key')),
+                'from_address' => config('mail.from.address'),
+                'trace' => $e->getTraceAsString(),
             ]);
         }
 

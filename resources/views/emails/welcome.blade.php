@@ -14,11 +14,11 @@
         <p style="font-size: 16px; margin-bottom: 20px;">Hi {{ $user->name }},</p>
         
         <p style="font-size: 16px; margin-bottom: 20px;">
-            Thank you for signing up! We're excited to have you on board.
+            Thank you for signing up for XPro! We're excited to have you on board.
         </p>
         
         <p style="font-size: 16px; margin-bottom: 20px;">
-            Your account has been successfully created. You can now start using all the features of {{ $appName }}.
+            Your account has been successfully created. You can now start booking private jet charters and managing your travel preferences.
         </p>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">

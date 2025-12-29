@@ -20,7 +20,7 @@ class WelcomeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to CaseConnect!',
+            subject: 'Welcome to XPro!',
         );
     }
 
@@ -30,7 +30,7 @@ class WelcomeEmail extends Mailable
             view: 'emails.welcome',
             with: [
                 'user' => $this->user,
-                'appName' => config('app.name', 'CaseConnect'),
+                'appName' => 'XPro',
             ],
         );
     }
